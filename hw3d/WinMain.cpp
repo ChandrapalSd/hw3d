@@ -1,5 +1,7 @@
 #include "App.h"
 
+// TODO: make this less shitty
+HWND global_hwnd = nullptr;
 
 int CALLBACK WinMain(
 	HINSTANCE hInstance,
@@ -14,15 +16,15 @@ int CALLBACK WinMain(
 	}
 	catch (const ChiliException& e)
 	{
-		MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(global_hwnd, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
 	}
 	catch (const std::exception& e)
 	{
-		MessageBox(nullptr, e.what(), "Standard Exception", MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(global_hwnd, e.what(), "Standard Exception", MB_OK | MB_ICONEXCLAMATION);
 	}
 	catch (...)
 	{
-		MessageBox(nullptr, "No details available", "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(global_hwnd, "No details available", "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
 	}
 	return -1;
 }

@@ -1,6 +1,7 @@
 #include "Window.h"
 #include <sstream>
 #include "resource.h"
+extern HWND global_hwnd;
 
 // Window Class Stuff
 Window::WindowClass Window::WindowClass::wndClass;
@@ -69,6 +70,7 @@ Window::Window(int width, int height, const char* name)
 		CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top,
 		nullptr, nullptr, WindowClass::GetInstance(), this
 	);
+	global_hwnd = hWnd;
 
 	// check for error
 	if (hWnd == nullptr)
