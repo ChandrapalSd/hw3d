@@ -21,7 +21,7 @@ Graphics::Graphics(HWND hWnd)
 	sd.SampleDesc.Quality = 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
-	sd.OutputWindow = hWnd;
+	sd.OutputWindow = (HWND)0;// hWnd;
 	sd.Windowed = TRUE;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
@@ -129,16 +129,33 @@ HRESULT Graphics::HrException::GetErrorCode() const noexcept
 	return hr;
 }
 
+
 std::string Graphics::HrException::GetErrorString() const noexcept
 {
+	// TODO: use FormatMessage and remove dxerr.h
 	return DXGetErrorString(hr);
 }
 
 std::string Graphics::HrException::GetErrorDescription() const noexcept
 {
-	char buf[512];
-	DXGetErrorDescription(hr, buf, sizeof(buf));
-	return buf;
+	char* pMsgBuf = nullptr;
+	// windows will allocate memory for err string and make our pointer point to it
+	const DWORD nMsgLen = FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr
+	);
+	// 0 string length returned indicates a failure
+	if (nMsgLen == 0)
+	{
+		return "Unidentified error code";
+	}
+	// copy error string from windows-allocated buffer to std::string
+	std::string errorString = pMsgBuf;
+	// free windows buffer
+	LocalFree(pMsgBuf);
+	return errorString;
 }
 
 const char* Graphics::DeviceRemovedException::GetType() const noexcept
