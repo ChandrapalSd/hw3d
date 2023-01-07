@@ -10,6 +10,7 @@ int CALLBACK WinMain(
 	int		  nCmdShow
 	)
 {
+	static HWND global_hwnd = nullptr;
 	try
 	{
 		return App{}.Go();
